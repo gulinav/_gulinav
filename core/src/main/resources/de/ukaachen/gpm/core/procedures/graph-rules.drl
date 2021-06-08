@@ -1,0 +1,216 @@
+package de.ukaachen.gpm.core.procedures
+
+dialect "mvel"
+
+import de.ukaachen.gpm.core.model.rule_network.VertexType;
+import de.ukaachen.gpm.core.model.patient.TimePhase;
+
+
+import de.ukaachen.gpm.core.model.rule_network.initial_facts.network_facts.Edg;
+import de.ukaachen.gpm.core.model.rule_network.initial_facts.network_facts.Vtx;
+import de.ukaachen.gpm.core.model.rule_network.initial_facts.patient_facts.PotentiallyConditionSatisfied;
+import de.ukaachen.gpm.core.model.rule_network.initial_facts.patient_facts.ConditionSatisfied;
+import de.ukaachen.gpm.core.model.rule_network.initial_facts.patient_facts.VertexFinished;
+
+
+import de.ukaachen.gpm.core.model.rule_network.inferences.Traversable;
+import de.ukaachen.gpm.core.model.rule_network.inferences.Reachable;
+import de.ukaachen.gpm.core.model.rule_network.inferences.ReachableFromStart;
+import de.ukaachen.gpm.core.model.rule_network.inferences.VertexTimePhase;
+import de.ukaachen.gpm.core.model.rule_network.inferences.PotentiallyTraversable;
+import de.ukaachen.gpm.core.model.rule_network.inferences.PotentiallyReachable;
+import de.ukaachen.gpm.core.model.rule_network.inferences.PotentiallyReachableFromStart;
+import de.ukaachen.gpm.core.model.rule_network.inferences.AtLeastPotentiallyReachableFromStart;
+import de.ukaachen.gpm.core.model.rule_network.inferences.AtLeastPotentiallyTraversable;
+import de.ukaachen.gpm.core.model.rule_network.inferences.AtLeastPotentiallyConditionSatisfied;
+
+
+rule "AtLeastPotentiallyConditionSatisfied"
+when
+  PotentiallyConditionSatisfied($edge: edge) or ConditionSatisfied($edge: edge)
+then
+  insert(new AtLeastPotentiallyConditionSatisfied($edge));
+end
+
+rule "TraversableFromStart"
+// traversable from start
+when
+  $startVertex: Vtx(type == VertexType.START_EVENT)
+  $edge: Edg(source == $startVertex)
+then
+  insert(new Traversable($edge));
+end
+
+rule "TraversableFromActivity"
+// traversable from activity
+when
+  $activity: Vtx(type == VertexType.ACTIVITY)
+  $edge: Edg(source == $activity)
+  VertexFinished(vertex == $activity)
+  ConditionSatisfied(edge == $edge)
+then
+  insert(new Traversable($edge));
+end
+
+rule "TraversableFromExclusiveGateway"
+when
+  $exclusiveGateway: Vtx(type == VertexType.EXCLUSIVE_GATEWAY)
+  $edge: Edg(source == $exclusiveGateway)
+  ConditionSatisfied(edge == $edge)
+then
+  insert(new Traversable($edge));
+end
+
+rule "TraversableFromParallelGateway"
+when
+  $parallelGateway: Vtx(type == VertexType.PARALLEL_GATEWAY)
+  $edge: Edg(source == $parallelGateway)
+  ConditionSatisfied(edge == $edge)
+  forall($incomingEdg: Edg(target == $parallelGateway) Traversable(edge == $incomingEdg))
+  forall($incomingEdg: Edg($source: source, target == $parallelGateway) ReachableFromStart(vertex == $source))
+then
+  insert(new Traversable($edge));
+end
+
+rule "PotentiallyTraversableFromActivity"
+when
+  $activity: Vtx(type == VertexType.ACTIVITY)
+  $edge: Edg(source == $activity)
+  AtLeastPotentiallyConditionSatisfied(edge == $edge)
+then
+  insert(new PotentiallyTraversable($edge));
+end
+
+rule "PotentiallyTraversableFromExclusiveGateway"
+when
+  $exclusiveGateway: Vtx(type == VertexType.EXCLUSIVE_GATEWAY)
+  $edge: Edg(source == $exclusiveGateway)
+  PotentiallyConditionSatisfied(edge == $edge)
+then
+  insert(new PotentiallyTraversable($edge));
+end
+
+rule "AtLeastPotentiallyTraversable"
+when
+  $edge: Edg()
+  Traversable(edge == $edge) or PotentiallyTraversable(edge == $edge)
+then
+  insert(new AtLeastPotentiallyTraversable($edge));
+end
+
+rule "AtLeastPotentiallyReachableFromStart"
+when
+  $source: Vtx()
+  ReachableFromStart(vertex == $source) or PotentiallyReachableFromStart(vertex == $source)
+then
+  insert(new AtLeastPotentiallyReachableFromStart($source));
+end
+
+rule "PotentiallyTraversableFromParallelGateway"
+when
+  $parallelGateway: Vtx(type == VertexType.PARALLEL_GATEWAY)
+  $edge: Edg(source == $parallelGateway)
+  forall($incomingEdg: Edg(target == $parallelGateway) AtLeastPotentiallyTraversable(edge == $incomingEdg))
+  forall($incomingEdg: Edg($source: source, target == $parallelGateway) AtLeastPotentiallyReachableFromStart(vertex == $source))
+  AtLeastPotentiallyConditionSatisfied(edge == $edge)
+  not(Traversable(edge == $edge))
+then
+  insert(new PotentiallyTraversable($edge));
+end
+
+rule "ReachableBecauseOfSelfLoop"
+// self loop reachability
+when
+  $vertex: Vtx()
+then
+  insert(new Reachable($vertex, $vertex));
+end
+
+rule "ReachableBecauseNeighborWithTraversableEdge"
+// the neighbor of a vertex is reachable if the edge is traversable
+when
+  Traversable($edge: edge)
+then
+  insert(new Reachable($edge.source, $edge.target));
+end
+
+rule "ReachableBecauseOfRecursiveTraversability"
+// if predecessor is reachable and edge is traversable, the target is reachable
+when
+  Reachable($source: source, $target: target)
+  $edge: Edg(source == $target)
+  Traversable(edge == $edge)
+  not(Reachable(source == $source, target == $edge.target))
+then
+  insert(new Reachable($source, $edge.target));
+end
+
+rule "PotentiallyReachableBecauseOfNeighborWithPotentiallyTraversableEdge"
+when
+  PotentiallyTraversable($edge: edge)
+then
+  insert(new PotentiallyReachable($edge.source, $edge.target));
+end
+
+rule "PotentiallyReachableBecauseOfRecursiveTraversability"
+when
+  (Reachable($source: source, $target:target) or PotentiallyReachable($source: source, $target:target))
+  $edge: (Edg(source == $target))
+  (Traversable(edge == $edge) or PotentiallyTraversable(edge == $edge))
+  not(exists(Reachable(source == $source, target == $edge.target)))
+  not(PotentiallyReachable(source == $source, target == $edge.target))
+then
+  insert(new PotentiallyReachable($source, $edge.target));
+end
+
+rule "ReachableFromStart"
+when
+  $source: Vtx(type == VertexType.START_EVENT)
+  Reachable(source == $source, $target: target)
+then
+  insert(new ReachableFromStart($target));
+end
+
+rule "PotentiallyReachableFromStart"
+when
+  $source: Vtx(type == VertexType.START_EVENT)
+  PotentiallyReachable(source == $source, $target: target)
+then
+  insert(new PotentiallyReachableFromStart($target));
+end
+
+rule "Present"
+when
+  ReachableFromStart($vertex: vertex)
+  not(VertexFinished(vertex == $vertex))
+then
+  insert(new VertexTimePhase($vertex, TimePhase.PRESENT));
+end
+
+rule "Future"
+when
+  VertexTimePhase($presentVertex: vertex, timePhase == TimePhase.PRESENT)
+  (PotentiallyReachable(source == $presentVertex, $target: target) or (Reachable(source == $presentVertex, $target: target, target != $presentVertex)))
+  not(VertexTimePhase(vertex == $target, timePhase == TimePhase.PRESENT))
+then
+  insert(new VertexTimePhase($target, TimePhase.FUTURE));
+end
+
+rule "Unreachable"
+when
+  $vertex: Vtx()
+  not(PotentiallyReachableFromStart(vertex == $vertex))
+  not(ReachableFromStart(vertex == $vertex))
+then
+  insert(new VertexTimePhase($vertex, TimePhase.UNREACHABLE));
+end
+
+rule "Past"
+when
+  $vertex: Vtx()
+  not(VertexTimePhase(vertex == $vertex, timePhase == TimePhase.FUTURE))
+  not(VertexTimePhase(vertex == $vertex, timePhase == TimePhase.PRESENT))
+  not(VertexTimePhase(vertex == $vertex, timePhase == TimePhase.UNREACHABLE))
+then
+  insert(new VertexTimePhase($vertex, TimePhase.PAST));
+end

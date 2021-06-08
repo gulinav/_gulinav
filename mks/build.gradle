@@ -1,0 +1,10 @@
+plugins {
+    id 'dependency-conventions'
+    id 'version-constants'
+    id 'java-library'
+}
+
+dependencies {
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+}

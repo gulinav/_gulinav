@@ -1,0 +1,33 @@
+plugins {
+    id 'dependency-conventions'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
+}
+
+mainClassName = 'de.ukaachen.gulinav.cli.Main'
+
+dependencies {
+    // TODO This introduces lots of unnecessary sub-dependencies, need to refactor the core-module
+    //  to be more suitable to be used as a library (split it, pull out the spring stuff etc..)
+    implementation project(":core")
+
+    // To parse the command line
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
+}
+
+shadowJar {
+    append 'META-INF/kie.conf'
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang='en' dir='ltr'>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        html, body {
+            margin: 10px;
+            padding: 0;
+            width: 99%;
+            height: 99%;
+        }
+
+        .container {
+            width: 100%;
+        }
+
+        .column {
+            width: 50%;
+            /*width:33.33333333%;*/
+            float: left;
+        }
+
+        .column div {
+            width: 100%;
+            height: auto;
+        }
+
+    </style>
+    <style>
+        * {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-weight: normal;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        input[type='file'] {
+            display: none;
+        }
+
+        input[type='text'] {
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            border: none;
+            background: transparent;
+        }
+
+        .modeler {
+            width: 95.5%;
+            height: 60%;
+            position: relative;
+            left: 1.5%;
+            bottom: 50%;
+            top: 3%;
+            border: 6px solid rgb(211, 211, 211);
+            border-radius: 8px;
+            z-index: 1;
+        }
+
+        /*.divTable {*/
+        /*    overflow: auto;*/
+        /*    position: relative;*/
+        /*    width: 100%;*/
+        /*    height: 85%;*/
+        /*}*/
+
+        /*table {*/
+        /*    width: 97%;*/
+        /*    height: 85%;*/
+
+        /*}*/
+
+        table, th, td {
+            table-layout: fixed;
+            width: 97%;
+            height: 85%;
+            font-size: 14px;
+            margin: 10px;
+            border-style: groove;
+            border-radius: 1px;
+            border-color: lightgray;
+            border-collapse: collapse;
+        }
+
+        /*tr:nth-child(odd) {*/
+        /*    background-color: rgba(211, 211, 211, 0.2);*/
+        /*}*/
+
+        /*tr:nth-child(even) {*/
+        /*    background-color: rgba(211, 211, 211, 0.4);*/
+        /*}*/
+
+        /*th {*/
+        /*    background-color: rgb(96, 96, 96);*/
+        /*    color: white;*/
+        /*}*/
+
+        /*td:hover {*/
+        /*    background-color: rgba(211, 211, 211, 0.6);*/
+        /*}*/
+        .here-button {
+            background-color: #4DB715;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            padding: 10px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            left: 1.5%;
+            box-shadow: 1px 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .button {
+            background-color: #4DB715;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            padding: 10px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            position: relative;
+            left: 1.5%;
+            box-shadow: 1px 5px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .button:hover {
+            opacity: 0.9;
+        }
+
+        .clear {
+            background-color: blue;
+            opacity: 0.8;
+        }
+
+        .clear:hover {
+            opacity: 0.7;
+        }
+
+        .box {
+            position: relative;
+            top: 10px;
+            left: 5%;
+        }
+
+        select {
+            border-radius: 4px;
+            color: black;
+            padding: 8px 8px;
+            font-size: 14px;
+            position: relative;
+            left: 1.5%;
+            box-shadow: 1px 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        select:hover {
+            border-color: black;
+        }
+
+        .split {
+            height: 100%;
+            width: 33.333333%;
+            position: fixed;
+            z-index: 1;
+            top: 25%;
+            overflow-x: auto;
+            padding-top: 10px;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            right: 0;
+        }
+
+        .middle {
+            left: 33.333333%
+        }
+
+        .guidelineItem {
+            border-radius: 2px;
+            border-style: solid;
+            border-width: thin;
+            width: 600px;
+            height: 40px;
+            margin-bottom: 5px;
+            text-align: center;
+            line-height: 40px;
+            font-size: x-large;
+        }
+
+        .past {
+            background-color: rgba(0, 51, 153, 0.2);
+            border-color: rgb(0, 51, 153);
+        }
+
+        .present {
+            background-color: rgba(179, 0, 0, 0.2);
+            border-color: rgb(179, 0, 0);
+        }
+
+        .future {
+            background-color: rgba(45, 134, 85, 0.2);
+            border-color: rgb(45, 134, 85);
+        }
+
+        .default {
+            background-color: lightgray;
+            border-color: black;
+        }
+
+        .separator {
+            background-color: black;
+            height: 3px;
+            width: 100%;
+            margin-bottom: 40px;
+
+        }
+
+        .simplifiedOuterContainer {
+            background-color: white;
+        }
+
+        .disclaimer {
+            background-color: lightpink;
+            height: 50px;
+            line-height: 50px;
+            font-size: 12pt;
+        }
+
+        .top-part {
+            height: 25%;
+        }
+        .bottom-part {
+            height: 75%;
+        }
+        .info-text {
+            margin: 10px;
+        }
+    </style>
+    <title>Guideline Demonstrator</title>
+    <link rel='stylesheet' href='https://unpkg.com/bpmn-js@6.1.1/dist/assets/bpmn-font/css/bpmn.css'>
+    <link rel='stylesheet' href='diagram-js-modified.css'>
+</head>
+<body>
+<div class="top-part">
+    <h1>DEMONSTRATOR: A system for the context-specific visualization of clinical practice guidelines
+    </h1>
+    <div align="left">1. Use the left column to mock some patient data</div>
+    <div align="left">2. Select a guideline in the middle column (or use the demo guideline)</div>
+    <div align="left">3. Click the "evaluate" button in the left column and observe the context-specific changes in the middle
+        and right column.</div>
+    <div align="left">If you want to have a closer look at the structure of the demo guideline,
+        you can download it <button class='here-button' onclick="onClickDemoGuideline();">here.</button></div>
+    <div class="disclaimer">DISCLAIMER: This is a really simple frontend only for demonstrating purposes. The real power is
+        in the backend. If something breaks reload page (maybe even in a new browser window..). Consult the README to learn about the capabilities of the backend.
+    </div>
+</div>
+<div class="bottom-part">
+    <div class='split left'>
+        <h2 align="center">Treatment Context:</h2>
+        <div class="separator"></div>
+        <div class="info-text">
+            Here, you can enter information known about the patient and her treatment.<br>
+
+<!--            <table>-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th>Code</th>-->
+<!--                    <th>Used for</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                <tr>-->
+<!--                    <td>GPM_CS:LABORATORY</td>-->
+<!--                    <td>Lab value for the first activity</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>LOINC:8310-5</td>-->
+<!--                    <td>body-temperature (used for: determine if fever)</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>GPM_CS:DIAGNOSIS_X</td>-->
+<!--                    <td>..</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>GPM_CS:DIAGNOSIS_X</td>-->
+<!--                    <td>..</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>GPM_CS:THERAPY_X</td>-->
+<!--                    <td>..</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>GPM_CS:DIAGNOSIS_Y</td>-->
+<!--                    <td>..</td>-->
+<!--                </tr>-->
+<!--                <tr>-->
+<!--                    <td>GPM_CS:THERAPY_Y</td>-->
+<!--                    <td>..</td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+
+        </div>
+        <div id='canvasleft'>
+            <div id='canvasTable' class='divTable'>
+                <div class="info-text">
+                    Use the following table to mock data.<br>
+                    Timestamps have to have the following Structure (ISO 8601): 2019-10-01T08:25:24.00Z<br>
+                    Play around with the values (e.g. MISC:AUREUS_OR_LUGDUNENSIS == true), or
+                    remove a value..) to see what happens with the visualization!
+                </div>
+                Relevant values:
+                <ul>
+                    <li>MISC:AUREUS_OR_LUGDUNENSIS</li>
+                    <li>MISC:INFECTIOLOGIST</li>
+                    <li>MISC:MULTIPLE_SAMPLES</li>
+                    <li>MISC:ANOTHER_SAMPLE_TAKEN</li>
+                    <li>MISC:BOTH_POSITIVE</li>
+                    <li>MISC:ANTIBIOTIC_TREATMENT</li>
+                    <li>MISC:FOCI_EXIST</li>
+                    <li>MISC:REMOVE_FOCI</li>
+                </ul>
+                <table id='dataTable'>
+                    <tr id="table-header">
+                        <th>Code</th>
+                        <th>Timestamp</th>
+                        <th>Value</th>
+                    </tr>
+<!--                    <tr>-->
+<!--                        <td><input id="first_row_first_col" type="text" size="30"/></td>-->
+<!--                        <td><input id="first_row_sec_col" type="text" size="30"/></td>-->
+<!--                        <td><input id="first_row_third_col" type="text" size="30"/></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><input id="second_row_first_col" type="text" size="30"/></td>-->
+<!--                        <td><input id="second_row_sec_col" type="text" size="30"/></td>-->
+<!--                        <td><input id="second_row_third_col" type="text" size="30"/></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><input id="third_row_first_col" type="text" size="30"/></td>-->
+<!--                        <td><input id="third_row_sec_col" type="text" size="30"/></td>-->
+<!--                        <td><input id="third_row_third_col" type="text" size="30"/></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><input id="fourth_row_first_col" type="text" size="30"/></td>-->
+<!--                        <td><input id="fourth_row_sec_col" type="text" size="30"/></td>-->
+<!--                        <td><input id="fourth_row_third_col" type="text" size="30"/></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                        <td><input type="text" size="30"/></td>-->
+<!--                    </tr>-->
+                </table>
+            </div>
+            <button type='button' class='button box' id='evaluate'>Evaluate Guideline with given context!</button>
+            <button type='button' class='button box' id='addRow'>Add Row</button>
+            <button type='button' class='button clear box' onclick="clearDataTable();">Clear</button>
+            <button type='button' class='button clear box' onclick="setMockData();">Reset mock data</button>
+        </div>
+    </div>
+    <div class='split middle'>
+        <h2 align="center">BPMN View of Guideline:</h2>
+        <div class="separator"></div>
+        <div>
+            <select name='guideline list' id='list'>
+                <option value=''>--Please choose a guideline--</option>
+            </select>
+            <input type='file' id='guideline'/>
+            <label for='guideline' class='button'>Upload Guideline</label>
+<!--            <button type='button' class='button' id='show'>Show Guideline</button>-->
+            <button type='button' class='button' id='js-download-svg'>Download as SVG</button>
+            <button type='button' class='button clear' id='clearDiagram'>Clear</button>
+        </div>
+        <div id='canvasColored' class='modeler'></div>
+    </div>
+    <div class='split right simplifiedOuterContainer'>
+        <h2 align="center">Simplified View:</h2>
+        <div class="separator"></div>
+        <div id="simplified-info-text">Simplified view is only shown after guideline was evaluated</div>
+        <div align="center" id="guidelineContainer">
+        </div>
+
+        <script src='https://unpkg.com/bpmn-js@6.2.1/dist/bpmn-modeler.development.js'>
+        </script>
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js'>
+        </script>
+        <script type='text/javascript' src='colorBPMN.js'>
+        </script>
+    </div>
+</div>
+</body>
+</html>

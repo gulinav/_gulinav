@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1vmwbjd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.2.3">
+  <bpmn:process id="Process_1" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_1xvrfoi</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0aa2pk7" name="no" sourceRef="tInvestigate" targetRef="tTakeBloodsample">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${MULTIPLE_SAMPLES != true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1l3vqp2" name="yes" sourceRef="tInvestigate" targetRef="tDecideSampleIndependence">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${MULTIPLE_SAMPLES == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0fn9r99" name="no" sourceRef="tDecideSampleIndependence" targetRef="tTakeBloodsample">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${SUFFICIENTLY_INDEPENDENT != 'TRUE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1q1hc6x" name="sample taken" sourceRef="tTakeBloodsample" targetRef="tDecideSampleIndependence">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ANOTHER_SAMPLE_TAKEN != 'false'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:parallelGateway id="ExclusiveGateway_17hk1b3">
+      <bpmn:incoming>SequenceFlow_0vnoqio</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0yu3jq0</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0chh4u5</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_11ckoqu" name="yes" sourceRef="tDecideSampleIndependence" targetRef="Task_05tug1u">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${SUFFICIENTLY_INDEPENDENT == 'TRUE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:parallelGateway id="ExclusiveGateway_0y1c168">
+      <bpmn:incoming>SequenceFlow_1wrteri</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1uuzzmk</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_14cr7dl</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_139ntue</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_1wrteri" sourceRef="tAntibioticTreatment" targetRef="ExclusiveGateway_0y1c168">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ANTIBIOTIC_TREATMENT != false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1l1vjwz" name="foci exist" sourceRef="tSearchFoci" targetRef="tRemoveFoci">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FOCI_EXIST == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="EndEvent_0hcm6oh">
+      <bpmn:incoming>SequenceFlow_139ntue</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1vjr6ee</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_139ntue" sourceRef="ExclusiveGateway_0y1c168" targetRef="EndEvent_0hcm6oh" />
+    <bpmn:sequenceFlow id="SequenceFlow_1uuzzmk" sourceRef="tRemoveFoci" targetRef="ExclusiveGateway_0y1c168">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${REMOVE_FOCI == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_14cr7dl" name="foci do not exist" sourceRef="tSearchFoci" targetRef="ExclusiveGateway_0y1c168">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FOCI_EXIST != true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="tTakeBloodsample" name="take another blood sample">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="ANOTHER_SAMPLE_TAKEN" value="MISC:ANOTHER_SAMPLE_TAKEN" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0aa2pk7</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0fn9r99</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1q1hc6x</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="tInvestigate" name="investigate if more than one sample positive">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="MULTIPLE_SAMPLES" value="MISC:MULTIPLE_SAMPLES" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1q6qotb</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0aa2pk7</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1l3vqp2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="tDecideSampleIndependence" name="decide if samples are sufficiently independent ">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="SUFFICIENTLY_INDEPENDENT" value="MKM:SUFFICIENTLY_INDEPENDENT" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1l3vqp2</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_1q1hc6x</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0fn9r99</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_11ckoqu</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="tSearchFoci" name="search for potential infection foci">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="FOCI_EXIST" value="MISC:FOCI_EXIST" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0yu3jq0</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1l1vjwz</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_14cr7dl</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="tAntibioticTreatment" name="antibiotic treatment">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="ANTIBIOTIC_TREATMENT" value="MISC:ANTIBIOTIC_TREATMENT" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0chh4u5</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1wrteri</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="tRemoveFoci" name="treat foci">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="REMOVE_FOCI" value="MISC:REMOVE_FOCI" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1l1vjwz</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1uuzzmk</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Task_0p2sfeg" name="consult an infectiologist">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="INFECTIOLOGIST" value="MISC:INFECTIOLOGIST" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0s1iw4h</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1xh4kkj</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_1e43fkj">
+      <bpmn:incoming>SequenceFlow_1xh4kkj</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1xh4kkj" sourceRef="Task_0p2sfeg" targetRef="EndEvent_1e43fkj">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${INFECTIOLOGIST == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Task_1vc7eqj" name="read microbiology report">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="AUREUS_OR_LUGDUNENSIS" value="MISC:AUREUS_OR_LUGDUNENSIS" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1xvrfoi</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0s1iw4h</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_1q6qotb</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1xvrfoi" sourceRef="StartEvent_1" targetRef="Task_1vc7eqj" />
+    <bpmn:sequenceFlow id="SequenceFlow_0s1iw4h" name="aureus or lugdunensis" sourceRef="Task_1vc7eqj" targetRef="Task_0p2sfeg">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${AUREUS_OR_LUGDUNENSIS == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_1q6qotb" name="not aureus and not lugdunensis" sourceRef="Task_1vc7eqj" targetRef="tInvestigate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${AUREUS_OR_LUGDUNENSIS != true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Task_05tug1u" name="decide if independent samples are both positive">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="BOTH_POSITIVE" value="MISC:BOTH_POSITIVE" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_11ckoqu</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1vjr6ee</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0vnoqio</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1vjr6ee" name="no" sourceRef="Task_05tug1u" targetRef="EndEvent_0hcm6oh">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${BOTH_POSITIVE == false}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0yu3jq0" sourceRef="ExclusiveGateway_17hk1b3" targetRef="tSearchFoci" />
+    <bpmn:sequenceFlow id="SequenceFlow_0chh4u5" sourceRef="ExclusiveGateway_17hk1b3" targetRef="tAntibioticTreatment" />
+    <bpmn:sequenceFlow id="SequenceFlow_0vnoqio" name="yes" sourceRef="Task_05tug1u" targetRef="ExclusiveGateway_17hk1b3">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${BOTH_POSITIVE == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:textAnnotation id="TextAnnotation_0y6jydv">
+      <bpmn:text>start: positive blood sample for Staphylococcus</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_19o2rbj" sourceRef="StartEvent_1" targetRef="TextAnnotation_0y6jydv" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="230" y="317" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0y6jydv_di" bpmnElement="TextAnnotation_0y6jydv">
+        <dc:Bounds x="191" y="249" width="113" height="54" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_19o2rbj_di" bpmnElement="Association_19o2rbj">
+        <di:waypoint x="247" y="317" />
+        <di:waypoint x="249" y="303" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0aa2pk7_di" bpmnElement="SequenceFlow_0aa2pk7">
+        <di:waypoint x="472" y="295" />
+        <di:waypoint x="472" y="209" />
+        <di:waypoint x="562" y="209" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="454" y="269" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1l3vqp2_di" bpmnElement="SequenceFlow_1l3vqp2">
+        <di:waypoint x="522" y="335" />
+        <di:waypoint x="562" y="335" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="534" y="316" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0fn9r99_di" bpmnElement="SequenceFlow_0fn9r99">
+        <di:waypoint x="586" y="295" />
+        <di:waypoint x="586" y="249" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="567" y="264" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1q1hc6x_di" bpmnElement="SequenceFlow_1q1hc6x">
+        <di:waypoint x="637" y="249" />
+        <di:waypoint x="637" y="295" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="640" y="264" width="66" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ParallelGateway_1hjqwzj_di" bpmnElement="ExclusiveGateway_17hk1b3">
+        <dc:Bounds x="835" y="310" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_11ckoqu_di" bpmnElement="SequenceFlow_11ckoqu">
+        <di:waypoint x="662" y="335" />
+        <di:waypoint x="698" y="335" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="671" y="317" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ParallelGateway_1vi9nzf_di" bpmnElement="ExclusiveGateway_0y1c168">
+        <dc:Bounds x="1006" y="251" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1wrteri_di" bpmnElement="SequenceFlow_1wrteri">
+        <di:waypoint x="1003" y="335" />
+        <di:waypoint x="1031" y="335" />
+        <di:waypoint x="1031" y="301" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1l1vjwz_di" bpmnElement="SequenceFlow_1l1vjwz">
+        <di:waypoint x="798" y="209" />
+        <di:waypoint x="903" y="209" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="817" y="191" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_0hcm6oh_di" bpmnElement="EndEvent_0hcm6oh">
+        <dc:Bounds x="1069" y="258" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_139ntue_di" bpmnElement="SequenceFlow_139ntue">
+        <di:waypoint x="1056" y="276" />
+        <di:waypoint x="1069" y="276" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1uuzzmk_di" bpmnElement="SequenceFlow_1uuzzmk">
+        <di:waypoint x="1003" y="209" />
+        <di:waypoint x="1031" y="209" />
+        <di:waypoint x="1031" y="251" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_14cr7dl_di" bpmnElement="SequenceFlow_14cr7dl">
+        <di:waypoint x="793" y="250" />
+        <di:waypoint x="793" y="276" />
+        <di:waypoint x="1006" y="276" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="802.9999999999989" y="259" width="77" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_091jou2_di" bpmnElement="tTakeBloodsample">
+        <dc:Bounds x="562" y="169" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1fsc14i_di" bpmnElement="tInvestigate">
+        <dc:Bounds x="422" y="295" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0tv5v3a_di" bpmnElement="tDecideSampleIndependence">
+        <dc:Bounds x="562" y="295" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1lis2oa_di" bpmnElement="tSearchFoci">
+        <dc:Bounds x="698" y="169" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0omwnwz_di" bpmnElement="tAntibioticTreatment">
+        <dc:Bounds x="903" y="295" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0fzp18m_di" bpmnElement="tRemoveFoci">
+        <dc:Bounds x="903" y="169" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1ywxl2w_di" bpmnElement="Task_0p2sfeg">
+        <dc:Bounds x="287" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1e43fkj_di" bpmnElement="EndEvent_1e43fkj">
+        <dc:Bounds x="423" y="202" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1xh4kkj_di" bpmnElement="SequenceFlow_1xh4kkj">
+        <di:waypoint x="387" y="220" />
+        <di:waypoint x="423" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_0o9kxzg_di" bpmnElement="Task_1vc7eqj">
+        <dc:Bounds x="287" y="295" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1xvrfoi_di" bpmnElement="SequenceFlow_1xvrfoi">
+        <di:waypoint x="266" y="335" />
+        <di:waypoint x="287" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0s1iw4h_di" bpmnElement="SequenceFlow_0s1iw4h">
+        <di:waypoint x="337" y="295" />
+        <di:waypoint x="337" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="345" y="265" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1q6qotb_di" bpmnElement="SequenceFlow_1q6qotb">
+        <di:waypoint x="337" y="375" />
+        <di:waypoint x="337" y="410" />
+        <di:waypoint x="472" y="410" />
+        <di:waypoint x="472" y="375" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="361" y="381" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_1f2u6a2_di" bpmnElement="Task_05tug1u">
+        <dc:Bounds x="698" y="295" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1vjr6ee_di" bpmnElement="SequenceFlow_1vjr6ee">
+        <di:waypoint x="748" y="375" />
+        <di:waypoint x="748" y="399" />
+        <di:waypoint x="1087" y="399" />
+        <di:waypoint x="1087" y="294" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="760" y="382" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0yu3jq0_di" bpmnElement="SequenceFlow_0yu3jq0">
+        <di:waypoint x="860" y="310" />
+        <di:waypoint x="860" y="288" />
+        <di:waypoint x="748" y="288" />
+        <di:waypoint x="748" y="249" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0chh4u5_di" bpmnElement="SequenceFlow_0chh4u5">
+        <di:waypoint x="885" y="335" />
+        <di:waypoint x="903" y="335" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0vnoqio_di" bpmnElement="SequenceFlow_0vnoqio">
+        <di:waypoint x="798" y="335" />
+        <di:waypoint x="835" y="335" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="808" y="317" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

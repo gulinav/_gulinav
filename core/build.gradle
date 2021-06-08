@@ -1,0 +1,30 @@
+plugins {
+    id 'dependency-conventions'
+    id 'version-constants'
+    id 'java'
+}
+
+dependencies {
+    implementation project(':mks')
+    implementation("org.camunda.bpm:camunda-engine:${camundaVersion}")
+    implementation("org.jgrapht:jgrapht-core:${jGraphTVersion}")
+    implementation("org.apache.logging.log4j:log4j-core:${log4j2Version}")
+    implementation("de.odysseus.juel:juel-impl:${juelVersion}")
+    implementation("de.odysseus.juel:juel-api:${juelVersion}")
+    implementation("org.kie:kie-api:${kieVersion}")
+    implementation("org.kie:kie-spring:${kieVersion}")
+
+
+    implementation("com.fasterxml.jackson.core:jackson-core:${jacksonVersion}")
+    implementation("com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}")
+    implementation("com.google.guava:guava:${guavaVersion}")
+    compileOnly("org.projectlombok:lombok:${lombokVersion}")
+    testImplementation("org.projectlombok:lombok:${lombokVersion}")
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    testImplementation("junit:junit:${junitVersion}")
+    testImplementation("org.hamcrest:hamcrest-library:${hamcrestVersion}")
+    testImplementation("org.mockito:mockito-core:${mockitoVersion}")
+    testImplementation("org.powermock:powermock-api-mockito2:${powerMockVersion}")
+    testImplementation("org.powermock:powermock-module-junit4:${powerMockVersion}")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+}

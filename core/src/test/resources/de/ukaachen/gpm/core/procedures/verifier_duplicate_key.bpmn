@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1egeul8" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.16.2">
+  <bpmn:process id="Process_1" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_0cs3tnp</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndEvent_1sxxp6p">
+      <bpmn:incoming>SequenceFlow_19ybacw</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_04fk1a5</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0nohg7x</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0cs3tnp" sourceRef="StartEvent_1" targetRef="Task_05sd51v" />
+    <bpmn:sequenceFlow id="SequenceFlow_1dqy3km" sourceRef="Task_05sd51v" targetRef="Task_1txcqe5">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${A == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_19ybacw" sourceRef="Task_1txcqe5" targetRef="EndEvent_1sxxp6p">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${A == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Task_05sd51v" default="SequenceFlow_0nohg7x">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="A" value="CODE_1" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0cs3tnp</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1dqy3km</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0nohg7x</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_1txcqe5" default="SequenceFlow_04fk1a5">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="A" value="CODE_2" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1dqy3km</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_19ybacw</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_04fk1a5</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="SequenceFlow_04fk1a5" sourceRef="Task_1txcqe5" targetRef="EndEvent_1sxxp6p" />
+    <bpmn:sequenceFlow id="SequenceFlow_0nohg7x" sourceRef="Task_05sd51v" targetRef="EndEvent_1sxxp6p" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="176" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1sxxp6p_di" bpmnElement="EndEvent_1sxxp6p">
+        <dc:Bounds x="573" y="192" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0cs3tnp_di" bpmnElement="SequenceFlow_0cs3tnp">
+        <di:waypoint x="212" y="210" />
+        <di:waypoint x="267" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1dqy3km_di" bpmnElement="SequenceFlow_1dqy3km">
+        <di:waypoint x="367" y="210" />
+        <di:waypoint x="427" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_19ybacw_di" bpmnElement="SequenceFlow_19ybacw">
+        <di:waypoint x="527" y="210" />
+        <di:waypoint x="573" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_079hcnn_di" bpmnElement="Task_05sd51v">
+        <dc:Bounds x="267" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_0ds24pw_di" bpmnElement="Task_1txcqe5">
+        <dc:Bounds x="427" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_04fk1a5_di" bpmnElement="SequenceFlow_04fk1a5">
+        <di:waypoint x="477" y="170" />
+        <di:waypoint x="477" y="118" />
+        <di:waypoint x="591" y="118" />
+        <di:waypoint x="591" y="192" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0nohg7x_di" bpmnElement="SequenceFlow_0nohg7x">
+        <di:waypoint x="317" y="250" />
+        <di:waypoint x="317" y="313" />
+        <di:waypoint x="591" y="313" />
+        <di:waypoint x="591" y="228" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_06ytp1o" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.2.3">
+  <bpmn:process id="Process_1" isExecutable="true">
+    <bpmn:startEvent id="start">
+      <bpmn:outgoing>s_lab</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="s_lab" sourceRef="start" targetRef="tLab" />
+    <bpmn:sequenceFlow id="lab_fev" name="&#60; 100" sourceRef="tLab" targetRef="tFev">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${LABORATORY &lt; 100}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="lab_x" name="&#62;= 100" sourceRef="tLab" targetRef="tX">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${LABORATORY &gt;= 100}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="fev_y" name="fever" sourceRef="tFev" targetRef="tY">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FEVER == 'TRUE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="y_ydash" sourceRef="tY" targetRef="tYDash">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${DIAGNOSIS_Y == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="x_xdash" sourceRef="tX" targetRef="tXdash">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${DIAGNOSIS_X == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="end">
+      <bpmn:incoming>fev_end</bpmn:incoming>
+      <bpmn:incoming>ydash_end</bpmn:incoming>
+      <bpmn:incoming>xdash_end</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="fev_end" name="no fever" sourceRef="tFev" targetRef="end">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${FEVER == 'FALSE'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="ydash_end" sourceRef="tYDash" targetRef="end">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${THERAPY_Y == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="xdash_end" sourceRef="tXdash" targetRef="end">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${THERAPY_X == true}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="tLab" name="Check Lab Value">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="LABORATORY" value="GPM_CS:LABORATORY" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>s_lab</bpmn:incoming>
+      <bpmn:outgoing>lab_fev</bpmn:outgoing>
+      <bpmn:outgoing>lab_x</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="tFev" name="Does the patient have fever?">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="FEVER" value="MKM:FEVER" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>lab_fev</bpmn:incoming>
+      <bpmn:outgoing>fev_y</bpmn:outgoing>
+      <bpmn:outgoing>fev_end</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="tY" name="Diagnosis Y">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="DIAGNOSIS_Y" value="GPM_CS:DIAGNOSIS_Y" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>fev_y</bpmn:incoming>
+      <bpmn:outgoing>y_ydash</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="tYDash" name="Therapy Y&#39;">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="THERAPY_Y" value="GPM_CS:THERAPY_Y" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>y_ydash</bpmn:incoming>
+      <bpmn:outgoing>ydash_end</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="tXdash" name="Therapy X&#39;">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="THERAPY_X" value="GPM_CS:THERAPY_X" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>x_xdash</bpmn:incoming>
+      <bpmn:outgoing>xdash_end</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="tX" name="Diagnosis X">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="DIAGNOSIS_X" value="GPM_CS:DIAGNOSIS_X" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>lab_x</bpmn:incoming>
+      <bpmn:outgoing>x_xdash</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="start">
+        <dc:Bounds x="234" y="276" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0zt2bk7_di" bpmnElement="s_lab">
+        <di:waypoint x="270" y="294" />
+        <di:waypoint x="306" y="293" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1pnjs3l_di" bpmnElement="lab_fev">
+        <di:waypoint x="405" y="258" />
+        <di:waypoint x="480" y="235" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="422" y="227" width="28" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1umof1g_di" bpmnElement="lab_x">
+        <di:waypoint x="406" y="323" />
+        <di:waypoint x="480" y="338" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="429" y="309" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0zcktu7_di" bpmnElement="fev_y">
+        <di:waypoint x="580" y="220" />
+        <di:waypoint x="652" y="220" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="606" y="202" width="25" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0glokrl_di" bpmnElement="y_ydash">
+        <di:waypoint x="752" y="220" />
+        <di:waypoint x="785" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0xp2s5v_di" bpmnElement="x_xdash">
+        <di:waypoint x="580" y="347" />
+        <di:waypoint x="652" y="347" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_1m9gbol_di" bpmnElement="end">
+        <dc:Bounds x="816.609444798979" y="328.67645181876196" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0oviezc_di" bpmnElement="fev_end">
+        <di:waypoint x="530" y="260" />
+        <di:waypoint x="530" y="294" />
+        <di:waypoint x="835" y="294" />
+        <di:waypoint x="835" y="329" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="588" y="277" width="41" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0vmecby_di" bpmnElement="ydash_end">
+        <di:waypoint x="835" y="260" />
+        <di:waypoint x="835" y="329" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_10dcujk_di" bpmnElement="xdash_end">
+        <di:waypoint x="752" y="347" />
+        <di:waypoint x="817" y="347" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0uhsiro_di" bpmnElement="tLab">
+        <dc:Bounds x="306" y="253" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_127nydv_di" bpmnElement="tFev">
+        <dc:Bounds x="480" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_11qbzch_di" bpmnElement="tY">
+        <dc:Bounds x="652" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_12yx9bo_di" bpmnElement="tYDash">
+        <dc:Bounds x="785" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_12pa32o_di" bpmnElement="tXdash">
+        <dc:Bounds x="652" y="307" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0gkxsvw_di" bpmnElement="tX">
+        <dc:Bounds x="480" y="307" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

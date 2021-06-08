@@ -1,0 +1,8 @@
+rootProject.name='gulinav'
+
+buildscript {
+    repositories {
+        jcenter()
+        gradlePluginPortal()
+    }
+}

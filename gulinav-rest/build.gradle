@@ -1,0 +1,26 @@
+plugins {
+    id 'legacy-conventions'
+    id 'org.springframework.boot' version "2.1.8.RELEASE"
+    id 'application'
+    id 'com.palantir.docker' version '0.26.0'
+}
+
+mainClassName="de.ukaachen.gulinav.rest.Main"
+
+
+dependencies {
+    implementation project(':core')
+    implementation project(':mks')
+}
+
+task unpack(type: Copy) {
+    dependsOn bootJar
+    from(zipTree(tasks.bootJar.outputs.files.singleFile))
+    into("build/dependency")
+}
+
+docker {
+    name "${project.group}/${bootJar.baseName}"
+    copySpec.from(tasks.unpack.outputs).into("dependency")
+    buildArgs(['DEPENDENCY': "dependency"])
+}
